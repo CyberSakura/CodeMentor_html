@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome Page</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<header>
+  <nav>
+    <a href="index.html">Welcome</a>
+    <a href="lesson.html">Lesson</a>
+    <a href="chat.html">Chat</a>
+    <a href="test-yourself.html">Test Yourself</a>
+  </nav>
+</header>
+
+<main>
+  <section id="user-profile">
+    <h2>Welcome back, XXX!</h2>
+    <p>Here’s your progress and next steps.</p>
+  </section>
+
+  <section id="progress-bar">
+    <label>Learning Progress:</label>
+    <progress value="50" max="100"></progress>
+    <p>50% completed</p>
+  </section>
+
+  <section id="navigation">
+    <button onclick="location.href='lesson.html'">Go to Lessons</button>
+    <button onclick="location.href='chat.html'">Go to Chat</button>
+    <button onclick="location.href='test-yourself.html'">Test Yourself</button>
+  </section>
+</main>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
