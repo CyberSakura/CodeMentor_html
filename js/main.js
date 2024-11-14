@@ -21,4 +21,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (error) {
     console.error('Error fetching user info:', error);
   }
+
+  const logoutButton = document.getElementById('logoutButton');
+  if(logoutButton){
+    logoutButton.addEventListener('click', async () => {
+      try {
+        const response = await fetch('/logout', {method: 'POST'});
+
+        if (response.ok) {
+          alert('Logged Out Successfully!');
+          window.location.href = 'index.html';
+        }else{
+          alert('Failed to log out. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error logging out:', error);
+        alert('An error occurred. Please try again');
+      }
+    });
+  }
 });

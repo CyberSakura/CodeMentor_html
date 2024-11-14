@@ -73,6 +73,15 @@ app.post('/register', (req, res) => {
   });
 })
 
+app.post('/logout', (req, res) => {
+  if(loggedInUser){
+    loggedInUser = null;
+    res.status(200).send('Logged Out Successfully!');
+  }else{
+    res.status(400).send('No user is currently logged in.');
+  }
+});
+
 app.get('/main.html', (req, res) => {
   if(!loggedInUser){
     return res.redirect('/');
