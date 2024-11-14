@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       console.error('Failed to fetch user info');
       alert('You must be logged in to access this page.');
-      window.location.href = 'index.html';
+      window.location.href = '../html/index.html';
     }
   } catch (error) {
     console.error('Error fetching user info:', error);
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (response.ok) {
           alert('Logged Out Successfully!');
-          window.location.href = 'index.html';
+          window.location.href = 'html/index.html';
         }else{
           alert('Failed to log out. Please try again.');
         }

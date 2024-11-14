@@ -21,7 +21,9 @@ html {
 header {
   background-color: #f8f9fa;
   padding: 1rem;
-  text-align: left; /* Align text to the left */
+  display: flex;
+  align-items: center; /* Align text to the left */
+  justify-content: space-between;
   border-bottom: 2px solid #e0e0e0;
 }
 
@@ -34,16 +36,20 @@ header {
 
 /* Navigation Bar Styles */
 nav {
-  margin-left: auto; /* Push navigation to the right */
+  display: flex;
+  gap: 1rem;/* Push navigation to the right */
 }
 
-nav a {
+nav a,
+nav button{
   text-decoration: none;
   color: #333;
-  margin-left: 1rem; /* Add spacing between links */
+  background: none;
+  border: none;
+  cursor: pointer; /* Add spacing between links */
   font-size: 1rem;
 }
-
+nav button:hover,
 nav a:hover {
   text-decoration: underline; /* Optional: Add underline on hover */
 }

@@ -10,7 +10,7 @@ app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname)));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'html/index.html'));
 });
 
 const db = new sqlite3.Database('./identifier.sqlite', (err) => {
@@ -87,7 +87,7 @@ app.get('/main.html', (req, res) => {
     return res.redirect('/');
   }
 
-  res.sendFile(path.join(__dirname, 'main.html'));
+  res.sendFile(path.join(__dirname, 'html/main.html'));
 });
 
 app.get('/user-info', (req, res) => {

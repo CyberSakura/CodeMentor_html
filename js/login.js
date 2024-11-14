@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (response.ok) {
         const message = await response.text();
         alert(message);
-        window.location.href = 'main.html';
+        window.location.href = '../html/main.html';
       } else {
         const error = await response.text();
         alert(`Error: ${error}`); // Show an error message
