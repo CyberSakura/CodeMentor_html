@@ -17,6 +17,38 @@ html {
   line-height: 1.4;
 }
 
+
+header {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  text-align: left; /* Align text to the left */
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333; /* Darker text for better visibility */
+}
+
+/* Navigation Bar Styles */
+nav {
+  margin-left: auto; /* Push navigation to the right */
+}
+
+nav a {
+  text-decoration: none;
+  color: #333;
+  margin-left: 1rem; /* Add spacing between links */
+  font-size: 1rem;
+}
+
+nav a:hover {
+  text-decoration: underline; /* Optional: Add underline on hover */
+}
+
+
 /*
  * Remove text-shadow in selection highlight:
  * https://twitter.com/miketaylr/status/12228805301
