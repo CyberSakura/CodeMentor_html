@@ -56,6 +56,80 @@ nav a:hover {
 
 
 /*
+ * Style specific for chat.html
+ */
+/* Chat Container */
+#chat-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 70%;
+  height: 400px;
+  margin: 20px auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f9f9f9;
+}
+
+/* Chat Window */
+#chat-window {
+  flex-grow: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+/* Chat Message */
+.chat-message {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 70%;
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #d1f7c4;
+}
+
+.bot-message {
+  align-self: flex-start;
+  background-color: #e9ecef;
+}
+
+/* Chat Input */
+#chat-input-container {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background-color: #f8f9fa;
+}
+
+#chat-input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+#send-button {
+  margin-left: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#send-button:hover {
+  background-color: #0056b3;
+}
+
+/*
  * Remove text-shadow in selection highlight:
  * https://twitter.com/miketaylr/status/12228805301
  *
