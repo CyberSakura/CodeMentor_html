@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CodeMentor Chat</title>
   <link rel="stylesheet" href="../css/style.css">
 </head>
@@ -17,27 +18,41 @@
   </nav>
 </header>
 
-<!-- Main Content Placeholder -->
-<main>
-  <h1 style="text-align: left;">Have a specific question?</h1>
-  <!-- Other content goes here -->
+<!-- Main Content -->
+<main id="chat-container">
+  <!-- Chat Block -->
+  <section id="chat-block">
+    <h1>Have a specific question?</h1>
+
+    <img
+      id="new-conversation-icon"
+      src="/img/new conversation.png"
+      alt="New Conversation"
+      style="cursor: pointer; width: 40px; height: 40px;"
+    />
+
+    <div id="chat-window">
+      <!-- Chat messages will appear here -->
+    </div>
+    <div id="chat-input-container">
+      <input
+        type="text"
+        id="chat-input"
+        placeholder="Type your message here..."
+      />
+      <button id="send-button">Send</button>
+    </div>
+  </section>
+
+  <!-- Chat History Block -->
+  <section id="chat-history-block">
+    <h2>Chat History</h2>
+    <div id="chat-history">
+      <!-- Chat history blocks will appear here -->
+    </div>
+  </section>
 </main>
 
-<section id="chat-container">
-  <div id="chat-window">
-    <!-- Chat messages will be dynamically inserted here -->
-  </div>
-  <div id="chat-input-container">
-    <input
-      type="text"
-      id="chat-input"
-      placeholder="Type your message here..."
-    />
-    <button id="send-button">Send</button>
-  </div>
-</section>
-
-<!-- Footer Placeholder -->
 <footer>
   <p style="text-align: center;">© 2024 Learning Assistant</p>
 </footer>

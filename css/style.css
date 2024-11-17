@@ -59,67 +59,54 @@ nav a:hover {
  * Style specific for chat.html
  */
 /* Chat Container */
+/* Chat Container */
 #chat-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
-  width: 70%;
-  height: 400px;
-  margin: 20px auto;
+  padding: 20px;
+  gap: 20px;
+}
+
+/* Chat Block */
+#chat-block {
+  flex: 2; /* Takes more space */
   border: 1px solid #ddd;
   border-radius: 8px;
-  overflow: hidden;
+  padding: 10px;
   background-color: #f9f9f9;
 }
 
-/* Chat Window */
 #chat-window {
-  flex-grow: 1;
-  padding: 10px;
+  display: flex;
+  flex-direction: column; /* Stack messages vertically */
+  align-items: flex-start; /* Align messages to the left */
+  gap: 10px; /* Add spacing between messages */
+  height: 300px;
   overflow-y: auto;
+  margin-bottom: 10px;
   background-color: #fff;
-}
-
-/* Chat Message */
-.chat-message {
-  margin: 10px 0;
-  padding: 10px;
+  border: 1px solid #ddd;
   border-radius: 5px;
-  max-width: 70%;
+  padding: 10px;
 }
 
-.user-message {
-  align-self: flex-end;
-  background-color: #d1f7c4;
-}
-
-.bot-message {
-  align-self: flex-start;
-  background-color: #e9ecef;
-}
-
-/* Chat Input */
 #chat-input-container {
   display: flex;
-  padding: 10px;
-  border-top: 1px solid #ddd;
-  background-color: #f8f9fa;
+  gap: 10px;
 }
 
 #chat-input {
-  flex-grow: 1;
+  flex: 1;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  font-size: 16px;
 }
 
 #send-button {
-  margin-left: 10px;
   padding: 10px 20px;
-  font-size: 16px;
   background-color: #007bff;
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -128,6 +115,125 @@ nav a:hover {
 #send-button:hover {
   background-color: #0056b3;
 }
+
+/* New Conversation Button */
+#new-conversation-icon {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  transition: transform 0.2s ease;
+}
+
+#new-conversation-icon:hover {
+  transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+/* Chat Bubble */
+.chat-message {
+  max-width: 60%; /* Limit the width of the bubble */
+  padding: 10px 15px;
+  border-radius: 20px;
+  word-wrap: break-word;
+  line-height: 1.4;
+  font-size: 14px;
+  display: inline-block;
+  position: relative;
+}
+
+/* User Message Bubble */
+.user-message {
+  background-color: #d1e7ff; /* Light blue */
+  color: #000;
+  align-self: flex-end; /* Align message to the right */
+  text-align: right;
+  border-top-right-radius: 0; /* Remove one corner */
+  margin-left: auto; /* Push bubble to the right */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Bot Message Bubble */
+.bot-message {
+  background-color: #f1f1f1; /* Light gray */
+  color: #000;
+  align-self: flex-start; /* Align message to the left */
+  text-align: left;
+  border-top-left-radius: 0; /* Remove one corner */
+  margin-right: auto; /* Push bubble to the left */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Chat Bubble Arrow - User */
+.user-message::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: -10px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 0 10px 10px;
+  border-color: transparent transparent transparent #d1e7ff;
+}
+
+/* Chat Bubble Arrow - Bot */
+.bot-message::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: -10px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 10px 10px 0;
+  border-color: transparent #f1f1f1 transparent transparent;
+}
+
+/* Code block styling */
+pre {
+  background-color: #f5f5f5; /* Light gray background */
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto; /* Horizontal scroll for long code */
+  margin: 10px 0; /* Add spacing around code blocks */
+  font-size: 14px;
+}
+
+code {
+  font-family: 'Courier New', Courier, monospace; /* Monospace font for code */
+  color: #d6336c; /* Optional: Add color for code text */
+}
+
+/* Chat History Block */
+#chat-history-block {
+  flex: 1; /* Takes less space */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f1f1f1;
+}
+
+#chat-history {
+  height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.chat-history-item {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for selected history block */
+.chat-history-item.selected {
+  background-color: #e0f7fa; /* Light teal background for selection */
+  border-color: #00796b; /* Darker teal border */
+  box-shadow: 0 2px 8px rgba(0, 121, 107, 0.5); /* Slightly stronger shadow */
+}
+
 
 /*
  * Remove text-shadow in selection highlight:
