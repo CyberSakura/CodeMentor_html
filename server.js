@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname)));
 
 // OpenAI API setup
 const openai = new OpenAI({
-  apiKey: 'your api key',
+  apiKey: 'api-key',
 });
 
 // Database setup
@@ -138,12 +138,14 @@ app.post('/chat', async (req, res) => {
           if (err) {
             reject(err);
           } else {
-            resolve(row?.max_conversation_id !== null ? row.max_conversation_id + 1 : 1); // Start at 1 if no previous conversations exist
+            resolve(row?.max_conversation_id != null ? row.max_conversation_id +1: 1); // Start at 1 if no previous conversations exist
           }
         });
       });
 
-      console.log('Created new conversation ID:', activeConversationId);
+      if(!activeConversationId){
+        activeConversationId = 1;
+      }
     }
 
     const response = await openai.chat.completions.create({
@@ -154,21 +156,18 @@ app.post('/chat', async (req, res) => {
             '    Your goal is to explain Python concepts in the simplest terms possible, avoiding jargon or overly technical language.\n' +
             '    When asked to explain a concept, provide a concise, easy-to-understand explanation and a very basic example in Python.\n' +
             '    Always encourage the user and keep the tone friendly and supportive.\n' +
-            '    The text answer length should stay between from 50 to 200 words. ' +
             '    If a question isn\'t clear, politely ask for clarification instead of making assumptions.. ' },
         ...messages,
       ],
+      max_tokens: 1000,
     });
 
     const botReply = response.choices[0].message.content; // Extract the assistant's reply
 
-    console.log('User ID:', userId);
-    console.log('Conversation ID:', activeConversationId);
-    console.log('Last User Message:', messages[messages.length - 1].content);
-    console.log('Bot Reply:', botReply);
-
     const query =
-      `INSERT INTO chat_history (user_id, conversation_id, user_message, bot_response) VALUES (?, ?, ?, ?)`;
+      `INSERT INTO chat_history (user_id, conversation_id, user_message, bot_response)
+       VALUES (?, ?, ?, ?)
+       `;
 
     db.run(
       query,
@@ -182,7 +181,7 @@ app.post('/chat', async (req, res) => {
     );
 
 
-    res.json({ botReply });
+    res.json({ botReply, conversation_id: activeConversationId });
   } catch (error) {
     console.error('Error during chat interaction:', error.message);
     res.status(500).send('Failed to get a response from GPT-4.');

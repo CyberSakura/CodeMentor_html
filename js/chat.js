@@ -5,128 +5,133 @@ document.addEventListener('DOMContentLoaded', async () => {
   const sendButton = document.getElementById('send-button');
   const chatHistoryContainer = document.getElementById('chat-history');
   const newConversationIcon = document.getElementById('new-conversation-icon');
+  const newConversationButton = document.getElementById('new-conversation-button');
 
   // Global Variables
   let currentlySelectedBlock = null;
-  let activeConversationId = null;
+  let activeConversationId = localStorage.getItem('activeConversationId');
+  let isContinuingConversation = false;
 
-  // const startNewConversation = () => {
-  //   // Save the current conversation
-  //   const chatMessages = Array.from(chatWindow.children).map((msg) => ({
-  //     text: msg.textContent,
-  //     type: msg.classList.contains('user-message') ? 'user' : 'bot',
-  //   }));
-  //
-  //   if (chatMessages.length > 0) {
-  //     // Create a summary of the current conversation for history
-  //     const userMessage = chatMessages.find((msg) => msg.type === 'user')?.text || 'No User Message';
-  //     const botResponse = chatMessages.find((msg) => msg.type === 'bot')?.text || 'No Bot Response';
-  //
-  //     // Add the summary to the chat history
-  //     addHistoryItem(userMessage, botResponse);
-  //   }
-  //
-  //   // Clear the chat window for a new conversation
-  //   chatWindow.innerHTML = '';
-  // };
-  //
-  // newConversationButton.addEventListener('click', startNewConversation);
+  const resetActiveConversation = () => {
+    activeConversationId = null;
+    isContinuingConversation = false;
+    localStorage.removeItem('activeConversationId');
+  }
+
+  if(!isContinuingConversation){
+    resetActiveConversation();
+    chatWindow.innerHTML = '';
+  }
 
   const addMessage = (message, type, simulateTyping = false) => {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('chat-message', type === 'user' ? 'user-message' : 'bot-message');
-    messageDiv.textContent = message;
     chatWindow.appendChild(messageDiv);
 
-
-    const hasCode = message.includes('```');
-
-    if(simulateTyping){
+    if (simulateTyping) {
+      const plainText = message.replace(/```([\s\S]+?)```/g, ''); // Remove block code during typing
       let currentIndex = 0;
-      const typingText = hasCode ? message.replace(/```/g, '') : message;
-      messageDiv.textContent = '';
 
       const typingInterval = setInterval(() => {
-        messageDiv.textContent += typingText[currentIndex];
+        const typingText = plainText.slice(0, currentIndex + 1);
+        messageDiv.innerHTML = renderMarkdownToHTML(typingText); // Render Markdown progressively
         currentIndex++;
 
-        if(currentIndex === typingText.length){
+        if (currentIndex === plainText.length) {
           clearInterval(typingInterval);
-          if (hasCode) formatCodeBlock(messageDiv, message);
+          messageDiv.innerHTML = renderMarkdownToHTML(message); // Render the full formatted message
         }
 
         chatWindow.scrollTop = chatWindow.scrollHeight;
       }, 20);
-    }else if(hasCode){
-      formatCodeBlock(messageDiv, message);
-    }else{
-      messageDiv.textContent = message;
+    } else {
+      // Render the full message immediately
+      messageDiv.innerHTML = renderMarkdownToHTML(message);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
     }
-    chatWindow.scrollTop = chatWindow.scrollHeight;
   };
 
-  const formatCodeBlock = (messageDiv, message) => {
-    const [beforeCode, code, afterCode] = message.split(/```/); // Split the message into text and code parts
-    messageDiv.innerHTML = `
-    <div>${beforeCode.trim()}</div>
-    <pre><code>${code.trim()}</code></pre>
-    <div>${afterCode ? afterCode.trim() : ''}</div>
-  `;
-  };
+// Helper function to render Markdown-like content to HTML
+  const renderMarkdownToHTML = (text) => {
+    // Handle block code (```code```)
+    text = text.replace(/```([\s\S]+?)```/g, '<pre><code>$1</code></pre>');
 
-  const switchToConversation = (conversationId) => {
-    activeConversationId = conversationId;
-    loadChatHistory(conversationId);
-  }
+    // Handle inline code (`code`)
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Handle bold (**text**)
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    // Handle nested lists (with spaces for indentation)
+    const lines = text.split('\n');
+    const listStack = [];
+    let html = '';
+
+    lines.forEach((line) => {
+      const match = line.match(/^(\s*)([-\d]+\.)\s+(.*)/); // Match list items with indentation
+      if (match) {
+        const [_, spaces, marker, content] = match;
+        const level = spaces.length / 2; // Determine nesting level (2 spaces per level)
+
+        while (listStack.length > level) {
+          html += `</${listStack.pop()}>`; // Close deeper levels
+        }
+
+        if (listStack.length < level) {
+          const tag = marker.endsWith('.') ? 'ol' : 'ul'; // Detect ordered or unordered
+          html += `<${tag}>`;
+          listStack.push(tag);
+        }
+
+        html += `<li>${content}</li>`;
+      }else {
+        while (listStack.length > 0) {
+          html += `</${listStack.pop()}>`; // Close all open lists
+        }
+
+        if(!line.startsWith('<pre><code>') && !line.endsWith('</code></pre>')) {
+          html += `<p>${line}</p>`;
+        }else{
+          html += line;
+        }
+      }
+    });
+
+    while (listStack.length > 0) {
+      html += `</${listStack.pop()}>`; // Ensure all lists are closed
+    }
+
+    return html;
+  };
 
   const startNewConversation = () => {
     activeConversationId = null; // Reset the conversation ID to indicate a new conversation
+    localStorage.removeItem('activeConversationId');
     chatWindow.innerHTML = ''; // Clear the chat window
     console.log('Started a new conversation');
+
+    if(currentlySelectedBlock){
+      currentlySelectedBlock.classList.remove('selected');
+      currentlySelectedBlock = null;
+    }
+
+    const newConversationSummary = "New Conversation";
+    const newConversationID = "new";
+    addHistoryItem(newConversationSummary, newConversationID);
+
+    const historyItems = chatHistoryContainer.children;
+    if(historyItems.length > 0){
+      historyItems[historyItems.length - 1].classList.add('selected');
+      currentlySelectedBlock = historyItems[historyItems.length - 1];
+    }
   };
 
   if (newConversationIcon) {
     newConversationIcon.addEventListener('click', startNewConversation);
   }
 
-  const newConversationButton = document.getElementById('new-conversation-button');
   if (newConversationButton) {
     newConversationButton.addEventListener('click', startNewConversation);
-  }
-
-  const addHistoryItem = (summary, conversationId) => {
-    const historyDiv = document.createElement('div');
-    historyDiv.classList.add('chat-history-item');
-
-    // const userMessageDiv = document.createElement('p');
-    // userMessageDiv.textContent = `User: ${userMessage}`;
-    // userMessageDiv.style.fontWeight = 'bold';
-    //
-    // const botResponseDiv = document.createElement('p');
-    // botResponseDiv.textContent = `Assistant: ${botResponse}`;
-
-    const summaryDiv = document.createElement('p');
-    summaryDiv.textContent = summary;
-    summaryDiv.style.fontWeight = 'bold';
-
-    historyDiv.appendChild(summaryDiv);
-
-    // historyDiv.appendChild(userMessageDiv);
-    // historyDiv.appendChild(botResponseDiv);
-
-    historyDiv.addEventListener('click', () => {
-      if(currentlySelectedBlock){
-        currentlySelectedBlock.classList.remove('selected');
-      }
-
-      currentlySelectedBlock = historyDiv;
-      historyDiv.classList.add('selected');
-      loadCurrentConversation(conversationId)
-
-      // loadConversationToChatWindow(userMessage, botResponse);
-    });
-
-    chatHistoryContainer.appendChild(historyDiv);
   }
 
   const loadChatHistory = async () => {
@@ -146,6 +151,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.error('Error fetching chat history:', error);
     }
   };
+
+  const addHistoryItem = (summary, conversationId) => {
+    const historyDiv = document.createElement('div');
+    historyDiv.classList.add('chat-history-item');
+    historyDiv.dataset.conversationId = conversationId;
+
+    const summaryDiv = document.createElement('p');
+    summaryDiv.textContent = summary;
+    summaryDiv.style.fontWeight = 'bold';
+
+    historyDiv.appendChild(summaryDiv);
+
+    if(conversationId !== "new"){
+      historyDiv.addEventListener('click', () => {
+        if(currentlySelectedBlock){
+          currentlySelectedBlock.classList.remove('selected');
+        }
+
+        currentlySelectedBlock = historyDiv;
+        historyDiv.classList.add('selected');
+        loadCurrentConversation(conversationId)
+      });
+    }
+
+    chatHistoryContainer.appendChild(historyDiv);
+  }
 
   const loadCurrentConversation = async (conversationId) => {
     try {
@@ -168,7 +199,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-
   const showTypingIndicator = () => {
     const typingIndicator = document.createElement('div');
     typingIndicator.classList.add('chat-message', 'bot-message');
@@ -188,49 +218,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   const sendMessageToAssistant = async (newMessage) => {
     showTypingIndicator();
     try{
-      const uniqueMessages = new Set();
-
       const messages = Array.from(chatWindow.children).map((msg) => ({
         role: msg.classList.contains('user-message') ? 'user' : 'assistant',
         content: msg.textContent,
       }));
-      // const messages = Array.from(chatWindow.children).map((msg) => {
-      //   const role = msg.classList.contains('user-message') ? 'user' : 'assistant';
-      //   const content = msg.textContent;
-      //   const uniqueKey = `${role}:${content}`;
-      //
-      //   if(!uniqueMessages.has(uniqueKey)){
-      //     uniqueMessages.add(uniqueKey);
-      //     return {role, content};
-      //   }
-      //   return null;
-      // }).filter((msg) => msg!== null);
-
-      // let messages = Array.from(chatWindow.children).map((msg) => ({
-      //   role: msg.classList.contains('user-message') ? 'user' : 'assistant',
-      //   content: msg.textContent,
-      // }));
-
-      // messages = messages.filter((msg, index, self) =>
-      //   msg.content !== 'Typing...' &&
-      //   index === self.findIndex((m) => m.content === msg.content)
-      // );
       messages.push({ role: 'user', content: newMessage });
-
-      console.log('Payload being sent to server:', JSON.stringify({ messages }, null, 2));
 
       const response = await fetch('/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages, conversation_id: activeConversationId }),
+        body: JSON.stringify({
+          messages,
+          conversation_id: activeConversationId
+        }),
       });
 
       removeTypingIndicator();
 
       if (response.ok) {
         const data = await response.json();
-        activeConversationId = data.conversation_id;
-        addMessage(data.botReply, 'bot', true); // Add Assistant's reply to the chat
+        const { conversation_id: newConversationId, botReply } = data;
+
+        if(!activeConversationId){
+          activeConversationId = newConversationId;
+          localStorage.setItem('activeConversationId', activeConversationId);
+
+          const historyItems = Array.from(chatHistoryContainer.children);
+          const pendingHistoryItem = historyItems.find(
+            (item) => item.dataset.conversationId === "new"
+          );
+
+          if(pendingHistoryItem){
+            pendingHistoryItem.querySelector('p').textContent = `Conversation ${newConversationId}`;
+            pendingHistoryItem.dataset.conversationId = newConversationId;
+
+            // Add click handler to the updated block
+            pendingHistoryItem.addEventListener('click', () => loadCurrentConversation(newConversationId));
+          }
+        }
+
+        addMessage(botReply, 'bot', true); // Add Assistant's reply to the chat
       } else {
         console.error('Server returned an error:', response.status);
         addMessage('Error: Unable to get a response from the assistant.', 'bot');
@@ -244,6 +271,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await loadChatHistory();
 
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      if (e.shiftKey) {
+        // Allow newline input on Shift+Enter
+        console.log('Shift+Enter detected! Adding a newline.');
+      } else {
+        // Send the message on Enter
+        e.preventDefault();
+        sendButton.click();
+      }
+    }
+  });
+
+// Adjust the height of the textarea dynamically
+  const adjustTextareaHeight = () => {
+    chatInput.style.height = 'auto'; // Reset height to compute new height properly
+    chatInput.style.height = `${chatInput.scrollHeight}px`; // Adjust to fit content
+  };
+// Adjust height dynamically as the user types
+  chatInput.addEventListener('input', adjustTextareaHeight);
+
+// Optionally adjust height when the textarea is focused (in case no input exists yet)
+  chatInput.addEventListener('focus', adjustTextareaHeight);
+
   let isSendingMessage = false;
 
   sendButton.addEventListener('click', () => {
@@ -254,15 +305,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       addMessage(userMessage, 'user');
       chatInput.value = '';
 
+      adjustTextareaHeight();
+
       isSendingMessage = true;
       sendMessageToAssistant(userMessage);
       isSendingMessage = false;
-    }
-  });
-
-  chatInput.addEventListener('keypress', (e) => {
-    if(e.key === 'Enter'){
-      sendButton.click();
     }
   });
 
