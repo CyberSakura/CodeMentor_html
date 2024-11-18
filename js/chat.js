@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (response.ok) {
           alert('Logged out successfully!');
-          window.location.href = '../html/index.html'; // Redirect to login page
+          window.location.href = '../html/login.html'; // Redirect to login page
         } else {
           alert('Failed to log out. Please try again.');
         }

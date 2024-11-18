@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname)));
 
 // OpenAI API setup
 const openai = new OpenAI({
-  apiKey: 'API Key',
+  apiKey: 'your api key',
 });
 
 // Database setup
@@ -27,7 +27,7 @@ let loggedInUser = null;
 
 // Route: Serve main page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'html/index.html'));
+  res.sendFile(path.join(__dirname, 'html/login.html'));
 });
 
 // User login
@@ -177,12 +177,6 @@ app.post('/chat', async (req, res) => {
         if (err) {
           console.error('Error saving chat to database:', err.message);
           return res.status(500).send('Failed to save chat to history.');
-        }else{
-          console.log('Chat saved successfully:', {
-            userId,
-            userMessage: messages[messages.length - 1].content,
-            botReply,
-          });
         }
       }
     );
