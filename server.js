@@ -5,13 +5,14 @@ const bodyParser = require('body-parser')
 const OpenAI = require('openai');
 const app = express()
 const port = process.env.PORT || 4000
+require('dotenv').config();
 
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname)));
 
 // OpenAI API setup
 const openai = new OpenAI({
-  apiKey: 'api-key',
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Database setup
