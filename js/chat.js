@@ -99,16 +99,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     return html;
   };
 
-  const addHistoryItem = (summary, conversationId) => {
+  const addHistoryItem = (title, conversationId) => {
     const historyDiv = document.createElement('div');
     historyDiv.classList.add('chat-history-item');
     historyDiv.dataset.conversationId = conversationId;
 
+    const contentDiv = document.createElement('div');
+    contentDiv.classList.add('chat-item-content');
+
+    // Title of the chat
     const summaryDiv = document.createElement('p');
-    summaryDiv.textContent = summary;
+    summaryDiv.textContent = title;
+    summaryDiv.classList.add('chat-summary');
     summaryDiv.style.fontWeight = 'bold';
 
-    historyDiv.appendChild(summaryDiv);
+    // Action button
+    const actionMenuBtn = document.createElement('button');
+    actionMenuBtn.textContent = '···';
+    actionMenuBtn.classList.add('action-menu-btn');
+    actionMenuBtn.onclick = (event) => {
+      event.stopPropagation(); // Prevent triggering parent click events
+      toggleActionMenu(historyDiv, conversationId);
+    };
+
+    // Append summary and action menu button
+    contentDiv.appendChild(summaryDiv);
+    contentDiv.appendChild(actionMenuBtn);
+    historyDiv.appendChild(contentDiv);
 
     if (conversationId !== "new") {
       historyDiv.addEventListener('click', () => {
@@ -162,6 +179,129 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
       console.error('Error fetching chat history:', error);
     }
+  };
+
+  // Rename Chat History
+  const renameChatHistory = (historyDiv,conversationId) => {
+
+    const titleElement = historyDiv.querySelector('.chat-summary');
+    const currentTitle = titleElement.textContent;
+
+    const inputBox = document.createElement('input');
+    inputBox.type = 'text';
+    inputBox.value = currentTitle;
+    inputBox.classList.add('rename-input');
+    titleElement.replaceWith(inputBox);
+    inputBox.focus();
+
+    const saveNewTitle = () => {
+      const newTitle = inputBox.value.trim();
+      if(newTitle && newTitle !== currentTitle){
+        fetch(`/chat-history/rename`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ conversationId, newName: newTitle }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              titleElement.textContent = newTitle;
+              inputBox.replaceWith(titleElement); // Replace input with updated title
+            } else {
+              console.error('Failed to rename chat history.');
+              inputBox.replaceWith(titleElement); // Restore the old title
+            }
+          })
+          .catch((error) => {
+            console.error('Error renaming chat history:', error);
+            inputBox.replaceWith(titleElement); // Restore the old title
+          });
+      }else{
+        inputBox.replaceWith(titleElement);
+      }
+    };
+
+    inputBox.addEventListener('blur', saveNewTitle); // Save on losing focus
+    inputBox.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        saveNewTitle(); // Save on pressing Enter
+      } else if (event.key === 'Escape') {
+        inputBox.replaceWith(titleElement); // Cancel on pressing Escape
+      }
+    });
+  };
+
+  // Delete Chat History
+  const deleteChatHistory = (conversationId) => {
+    if (confirm("Are you sure you want to delete this conversation?")) {
+      fetch(`/chat-history/delete`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversationId }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            const historyItem = document.querySelector(
+              `.chat-history-item[data-conversation-id="${conversationId}"]`
+            );
+            if (historyItem) {
+              historyItem.remove();
+            }
+          } else {
+            console.error("Failed to delete chat history.");
+          }
+        })
+        .catch((error) => console.error("Error deleting chat history:", error));
+    }
+  };
+
+  const toggleActionMenu = (historyDiv, conversationId) => {
+    // Remove any existing menus globally
+    const existingMenus = document.querySelectorAll('.action-menu');
+    existingMenus.forEach(menu => menu.remove());
+
+    // Create action menu
+    const actionMenu = document.createElement('div');
+    actionMenu.classList.add('action-menu');
+
+    // Rename option
+    const renameOption = document.createElement('div');
+    renameOption.classList.add('action-menu-item');
+    renameOption.innerHTML = `<span class="action-menu-item-icon">✏️</span> Rename`;
+    renameOption.onclick = () => {
+      renameChatHistory(historyDiv, conversationId);
+      actionMenu.remove();
+      document.removeEventListener('click', handleOutsideClick);
+    };
+
+    // Delete option
+    const deleteOption = document.createElement('div');
+    deleteOption.classList.add('action-menu-item', 'delete');
+    deleteOption.innerHTML = `<span class="action-menu-item-icon">🗑️</span> Delete`;
+    deleteOption.onclick = () => {
+      deleteChatHistory(conversationId);
+      actionMenu.remove();
+      document.removeEventListener('click', handleOutsideClick);
+    };
+
+    // Add options to the menu
+    actionMenu.appendChild(renameOption);
+    actionMenu.appendChild(deleteOption);
+
+    // Append menu to the history item
+    historyDiv.appendChild(actionMenu);
+
+    const rect = historyDiv.getBoundingClientRect(); // Get the position of the history item
+    actionMenu.style.position = 'absolute';
+    actionMenu.style.top = `${rect.bottom + window.scrollY}px`; // Adjust for scrolling
+    actionMenu.style.left = `${rect.right - 150}px`;
+
+    const handleOutsideClick = (event) => {
+      if (!historyDiv.contains(event.target)) {
+        actionMenu.remove();
+        document.removeEventListener('click', handleOutsideClick); // Clean up listener
+      }
+    };
+    document.addEventListener('click', handleOutsideClick);
   };
 
   const startNewConversation = () => {

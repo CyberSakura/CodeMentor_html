@@ -123,6 +123,7 @@ app.post('/chat', async (req, res) => {
   }
 
   const userId = loggedInUser.id;
+  const userMessage = messages[messages.length - 1].content;
 
   try {
     let activeConversationId = conversation_id;
@@ -149,6 +150,24 @@ app.post('/chat', async (req, res) => {
       }
     }
 
+    const titleResponse = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: [
+        {
+          role: 'system',
+          content: 'Generate a concise, meaningful title for the following user input.'
+        },
+        {
+          role: 'user',
+          content: userMessage
+        }
+      ],
+      max_tokens: 10, // Keep the title short
+    });
+
+    const title = titleResponse.choices[0]?.message?.content?.trim() || userMessage.slice(0, 20);
+
+
     const response = await openai.chat.completions.create({
       model: 'gpt-4o', // Specify the model
       messages: [
@@ -165,14 +184,14 @@ app.post('/chat', async (req, res) => {
 
     const botReply = response.choices[0].message.content; // Extract the assistant's reply
 
-    const query =
-      `INSERT INTO chat_history (user_id, conversation_id, user_message, bot_response)
-       VALUES (?, ?, ?, ?)
-       `;
+    const query = `
+      INSERT INTO chat_history (user_id, conversation_id, user_message, bot_response, title)
+      VALUES (?, ?, ?, ?, ?)
+    `;
 
     db.run(
       query,
-      [userId, activeConversationId, messages[messages.length - 1].content, botReply],
+      [userId, activeConversationId, userMessage, botReply, title],
       (err) => {
         if (err) {
           console.error('Error saving chat to database:', err.message);
@@ -238,7 +257,12 @@ app.get('/chat-history', (req, res) => {
   } else {
     // Return summaries of all conversations (as above)
     const query = `
-      SELECT conversation_id, MIN(user_message) AS summary
+      SELECT
+        conversation_id,
+        CASE
+          WHEN title IS NOT NULL AND title != '' THEN title
+          ELSE MIN(user_message)
+          END AS summary
       FROM chat_history
       WHERE user_id = ?
       GROUP BY conversation_id
@@ -251,9 +275,57 @@ app.get('/chat-history', (req, res) => {
         return res.status(500).send('Failed to fetch chat history.');
       }
 
+      console.log("Query result from chat-history:", rows);
       res.json(rows); // Return summaries of conversations
     });
   }
+});
+
+// Rename a chat history item
+app.put('/chat-history/rename', (req, res) => {
+  const { conversationId, newName } = req.body;
+
+  if (!loggedInUser || !conversationId || !newName) {
+    return res.status(400).send('Invalid request data.');
+  }
+
+  const query = `
+    UPDATE chat_history
+    SET title = ?
+    WHERE user_id = ? AND conversation_id = ?;
+  `;
+
+  db.run(query, [newName, loggedInUser.id, conversationId], (err) => {
+    if (err) {
+      console.error('Error renaming chat history:', err.message);
+      return res.status(500).send('Failed to rename chat history.');
+    }
+
+    res.status(200).send('Chat history renamed successfully.');
+  });
+});
+
+// Delete a chat history item
+app.delete('/chat-history/delete', (req, res) => {
+  const { conversationId } = req.body;
+
+  if (!loggedInUser || !conversationId) {
+    return res.status(400).send('Invalid request data.');
+  }
+
+  const query = `
+        DELETE FROM chat_history
+        WHERE user_id = ? AND conversation_id = ?;
+    `;
+
+  db.run(query, [loggedInUser.id, conversationId], (err) => {
+    if (err) {
+      console.error('Error deleting chat history:', err.message);
+      return res.status(500).send('Failed to delete chat history.');
+    }
+
+    res.status(200).send('Chat history deleted successfully.');
+  });
 });
 
 
