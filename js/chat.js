@@ -12,6 +12,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   let activeConversationId = localStorage.getItem('activeConversationId');
   let isContinuingConversation = false;
 
+  try {
+    const response = await fetch('/user-info');
+    if (response.ok) {
+      const user = await response.json();
+
+      // Update the header username
+      const headerUsername = document.getElementById('header-username');
+      if (headerUsername) {
+        headerUsername.textContent = user.username;
+      }
+    } else {
+      console.error('Failed to fetch user info');
+      alert('You must be logged in to access this page.');
+      window.location.href = '../html/login.html';
+    }
+  } catch (error) {
+    console.error('Error fetching user info:', error);
+  }
+
   const resetActiveConversation = () => {
     activeConversationId = null;
     isContinuingConversation = false;

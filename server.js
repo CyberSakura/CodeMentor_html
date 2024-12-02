@@ -54,6 +54,7 @@ app.post('/login', (req, res) => {
       id: user.id,
       username: username,
       password: password || 0,
+      progress: user.progress || 0,
     };
 
     res.send(`Welcome back, ${user.username}!`);
