@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeMentor Lesson</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<header>
+  <div id="header-left">
+    <h1>CodeMentor</h1>
+  </div>
+  <div id="header-right">
+    <span>Welcome, <span id="header-username"></span></span>
+    <nav>
+      <a href="../main.html">Home</a>
+      <a href="lesson.html">Lesson</a>
+      <a href="chat.html">Chat</a>
+      <a href="https://chatgpt.com/g/g-RYPWOpHYe-pythontutor">PythonTutor GPT</a>
+      <button id="logoutButton">Logout</button>
+    </nav>
+  </div>
+</header>
+
+  <main>
+    <aside id="lesson-plan">
+      <h2>Lesson Plan!</h2>
+      <ol
+      id="lesson-plan-list">
+  <li><a href="">1. Hello World</a></li>
+  <li><a href="">2. Variables</a></li>
+  <li><a href="">2.B Practice Problems</a></li>
+  <li><a href="">3. Logic</a></li>
+  <li><a href="">4. Loops</a></li>
+  <li><a href="">4.B Practice Problems</a></li>
+  <li><a href="">5. Functions</a></li>
+  <li><a href="">5.B Coding Challenge</a></li>
+</ol>
+    </aside>
+
+    <section id="lesson-content">
+      <h3>Lesson Page Home</h3>
+      <p>
+        Welcome to the lesson page!
+      </p>
+      <p>
+        Here you can access your lesson plan!
+      </p>
+      <p>Use the sidebar to navigate between lesson pages. Use the star to favorite lessons for later review.</p>
+    </section>
+
+    <section id="chat">
+      <h3>Chat History</h3>
+      <div id="chat-history">
+      <div class="chat-history-item" data-conversation-id="1">
+        <div class="chat-item-content">
+          <p class="chat-summary">"Types of variables in C++"</p>
+        </div>
+      </div>
+      </div>
+    <a href="chat.html">
+      <button id="send-chat">Go to Chat</button>
+    </a>
+    </section>
+  </main>
+
+<footer>
+  <p style="text-align: center;">© 2024 Learning Assistant</p>
+</footer>
+
+<script src="/js/lesson.js"></script>
+</body>
+</html>
