@@ -348,6 +348,38 @@ a:hover {
   background-color: #f9f9f9;
 }
 
+#title-and-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#title-and-icon h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+#new-conversation-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  color: #007bff;
+  background-color: #f9f9f9;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-left: 950px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#new-conversation-icon:hover {
+  background-color: #e6f7ff;
+  transform: scale(1.1);
+}
+
 #chat-window {
   display: flex;
   flex-direction: column; /* Stack messages vertically */
