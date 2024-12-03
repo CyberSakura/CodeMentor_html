@@ -5,6 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CodeMentor Lesson</title>
   <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Pop-up styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background: #fff;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: left;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .popup-content h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .popup-content p {
+      margin: 10px 0;
+    }
+
+    .popup-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .popup-buttons button {
+      background: #ff5e57;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .popup-buttons button:hover {
+      background: #ff2e22;
+    }
+
+    .popup-buttons .navigate-btn {
+      background: #007bff;
+    }
+
+    .popup-buttons .navigate-btn:hover {
+      background: #0056b3;
+    }
+  </style>
 </head>
 <body>
 <header>
@@ -28,15 +90,15 @@
       <h2>Lesson Plan!</h2>
       <ol
       id="lesson-plan-list">
-  <li><a href="">1. Hello World</a></li>
-  <li><a href="">2. Variables</a></li>
-  <li><a href="">2.B Practice Problems</a></li>
-  <li><a href="">3. Logic</a></li>
-  <li><a href="">4. Loops</a></li>
-  <li><a href="">4.B Practice Problems</a></li>
-  <li><a href="">5. Functions</a></li>
-  <li><a href="">5.B Coding Challenge</a></li>
-</ol>
+        <li><a href="#" class="lesson-link" data-lesson="hello-world">1. Hello World</a></li>
+        <li><a href="#" class="lesson-link" data-lesson="variables">2. Variables</a></li>
+        <li><a href="#" class="lesson-link" data-lesson="practice-problems">2.B Practice Problems</a></li>
+        <li><a href="#" class="lesson-link" data-lesson="logic">3. Logic</a></li>
+        <li><a href="#" class="lesson-link" data-lesson="loops">4. Loops</a></li>
+        <li><a href="#" class="lesson-link" data-lesson="loop-practice">4.B Practice Problems</a></li>
+        <li><a href="#" class="lesson-link" data-lesson="functions">5. Functions</a></li>
+        <li><a href="#" class="lesson-link" data-lesson="coding-challenge">5.B Coding Challenge</a></li>
+      </ol>
     </aside>
 
     <section id="lesson-content">
@@ -64,6 +126,19 @@
     </a>
     </section>
   </main>
+
+<!-- Pop-up Window -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-content">
+    <h2 id="popup-title"></h2>
+    <div id="popup-body"></div>
+    <div class="popup-buttons">
+      <button id="prev-lesson" class="navigate-btn">Previous Lesson</button>
+      <button id="close-popup">Close</button>
+      <button id="next-lesson" class="navigate-btn">Next Lesson</button>
+    </div>
+  </div>
+</div>
 
 <footer>
   <p style="text-align: center;">© 2024 Learning Assistant</p>
