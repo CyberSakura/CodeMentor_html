@@ -333,10 +333,11 @@ a:hover {
 /* Chat Container */
 #chat-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column; /* Stack blocks vertically */
   justify-content: space-between;
   padding: 20px;
   gap: 20px;
+  height: 100%; /* Occupy the full height */
 }
 
 /* Chat Block */
@@ -370,7 +371,7 @@ a:hover {
   border-radius: 50%;
   width: 40px;
   height: 40px;
-  margin-left: 950px;
+  margin-left: 1650px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
@@ -380,18 +381,23 @@ a:hover {
   transform: scale(1.1);
 }
 
+/* Chat Window - Dynamic Height and Scroll */
 #chat-window {
   display: flex;
   flex-direction: column; /* Stack messages vertically */
   align-items: flex-start; /* Align messages to the left */
   gap: 10px; /* Add spacing between messages */
-  height: 300px;
-  overflow-y: auto;
-  margin-bottom: 10px;
+  resize: both; /* Enable resizing both horizontally and vertically */
+  overflow: auto; /* Add scrollbars when content exceeds size */
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 10px;
+  box-sizing: border-box;
+  min-width: 300px; /* Minimum width to prevent shrinking too much */
+  min-height: 150px; /* Minimum height to prevent shrinking too much */
+  max-width: 100%; /* Optional: Limit the maximum width */
+  max-height: 100%; /* Optional: Limit the maximum height */
 }
 
 #chat-input-container {
