@@ -305,4 +305,23 @@ greet("Bob")</code></pre>
       showLesson(currentLessonIndex);
     }
   });
+
+  // Add logout button event listener
+  const logoutButton = document.getElementById('logoutButton');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', async () => {
+      try {
+        const response = await fetch('/logout', { method: 'POST' });
+        if (response.ok) {
+          alert('Logged Out Successfully!');
+          window.location.href = '../html/login.html';
+        } else {
+          alert('Failed to log out. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error logging out:', error);
+        alert('An error occurred. Please try again.');
+      }
+    });
+  }
 })
