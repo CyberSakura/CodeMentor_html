@@ -49,6 +49,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Error fetching user info:', error);
   }
 
+  const expandChatButton = document.getElementById('expand-chat');
+  const questionTextarea = document.querySelector('#chat-box textarea');
+
+  if (expandChatButton) {
+    expandChatButton.addEventListener('click', () => {
+      const question = questionTextarea.value.trim();
+      if (question) {
+        sessionStorage.setItem('chatQuestion', question); // Save the question in sessionStorage
+      }
+      location.href = 'chat.html'; // Redirect to chat.html
+    });
+  }
+
   const logoutButton = document.getElementById('logoutButton');
   if (logoutButton) {
     logoutButton.addEventListener('click', async () => {

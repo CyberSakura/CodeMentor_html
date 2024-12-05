@@ -465,6 +465,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
+
+  const initialQuestion = sessionStorage.getItem('chatQuestion');
+  if (initialQuestion) {
+    sessionStorage.removeItem('chatQuestion'); // Clear the question from sessionStorage
+    addMessage(initialQuestion, 'user'); // Display the user's question in the chat window
+    await sendMessageToAssistant(initialQuestion); // Send the question to the chatbot
+  }
+
   // Adjust the height of the textarea dynamically
   const adjustTextareaHeight = () => {
     chatInput.style.height = 'auto'; // Reset height to compute new height properly
