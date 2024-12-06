@@ -473,6 +473,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     await sendMessageToAssistant(initialQuestion); // Send the question to the chatbot
   }
 
+  if (activeConversationId) {
+    sessionStorage.removeItem('activeConversationId'); // Clear the stored ID after use
+    await loadCurrentConversation(activeConversationId); // Load the specific conversation
+  } else {
+    // If no conversation ID is present, start a new conversation
+    startNewConversation();
+  }
+
   // Adjust the height of the textarea dynamically
   const adjustTextareaHeight = () => {
     chatInput.style.height = 'auto'; // Reset height to compute new height properly

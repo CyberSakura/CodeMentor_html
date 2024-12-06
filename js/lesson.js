@@ -49,6 +49,56 @@ document.addEventListener('DOMContentLoaded', async() => {
     console.error('Error fetching user info:', error);
   }
 
+  // Load chat history
+  const loadChatHistory = async () => {
+    try {
+      const response = await fetch('/chat-history'); // Call your existing /chat-history endpoint
+      if (response.ok) {
+        const chatHistory = await response.json(); // Get chat summaries
+
+        const chatHistoryContainer = document.getElementById('chat-history');
+        chatHistoryContainer.innerHTML = ''; // Clear any existing content
+
+        if (chatHistory.length === 0) {
+          const noHistoryMessage = document.createElement('p');
+          noHistoryMessage.textContent = 'No chat history found.';
+          chatHistoryContainer.appendChild(noHistoryMessage);
+          return;
+        }
+
+        chatHistory.forEach(({ conversation_id, summary }) => {
+          const historyItem = document.createElement('div');
+          historyItem.classList.add('chat-history-item');
+          historyItem.dataset.conversationId = conversation_id;
+
+          const contentDiv = document.createElement('div');
+          contentDiv.classList.add('chat-item-content');
+
+          const titleParagraph = document.createElement('p');
+          titleParagraph.classList.add('chat-summary');
+          titleParagraph.textContent = summary || `Conversation ${conversation_id}`;
+
+          contentDiv.appendChild(titleParagraph);
+          historyItem.appendChild(contentDiv);
+
+          // Add click event listener
+          historyItem.addEventListener('click', () => {
+            sessionStorage.setItem('activeConversationId', conversation_id); // Save the conversation ID
+            location.href = 'chat.html'; // Redirect to chat.html
+          });
+
+          chatHistoryContainer.appendChild(historyItem);
+        });
+      } else {
+        console.error('Failed to fetch chat history');
+      }
+    } catch (error) {
+      console.error('Error fetching chat history:', error);
+    }
+  };
+
+  // Call the function to load chat history
+  await loadChatHistory();
 
   // Pop-up logic for lessons
   const lessons = [
